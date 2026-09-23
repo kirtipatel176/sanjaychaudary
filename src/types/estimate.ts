@@ -11,11 +11,14 @@ export const ItemSchema = z.object({
 
 export const BusinessInfoSchema = z.object({
   name: z.string().min(1, "Business Name is required"),
+  slogan: z.string().optional(),
   services: z.string().optional(),
   proprietor: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
   signatureImage: z.string().nullable().optional(),
+  qrCodeImage: z.string().nullable().optional(),
+  upiId: z.string().optional(),
 });
 
 export const CustomerInfoSchema = z.object({

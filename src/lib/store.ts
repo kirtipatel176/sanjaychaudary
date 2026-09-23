@@ -7,11 +7,14 @@ const initialEstimate: Estimate = {
   id: "draft",
   businessInfo: {
     name: "HYDROCOOL SERVICES",
+    slogan: "",
     services: "AC | RO | GEYSER | WASHING MACHINE",
     proprietor: "Sanjay Patel",
     phone: "+91 78781 29063",
-    address: "Ground Floor, Shop No. 3, Parishram Complex,\nGandhinagar–Dabhoda Highway,\nNear GIFT City, Gandhinagar",
+    address: "Ground Floor, Shop No. 3, Parishram Complex,\nGandhinagar-Dabhoda Highway,\nNear GIFT City, Gandhinagar",
     signatureImage: null,
+    qrCodeImage: null,
+    upiId: "",
   },
   customerInfo: {
     name: "",
@@ -108,9 +111,12 @@ export const useEstimateStore = create<EstimateStore>()(
         const total = calculateTotal(state.estimate.subtotal, discount, taxRate);
         return { estimate: { ...state.estimate, discount, taxRate, total } };
       }),
-      resetEstimate: (newEstimateNumber) => set(() => ({
+      resetEstimate: (newEstimateNumber) => set((state) => ({
         estimate: {
           ...initialEstimate,
+          businessInfo: state.estimate.businessInfo,
+          notes: state.estimate.notes,
+          terms: state.estimate.terms,
           estimateDetails: {
             ...initialEstimate.estimateDetails,
             estimateNumber: newEstimateNumber,

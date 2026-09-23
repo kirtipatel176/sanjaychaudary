@@ -1,31 +1,5 @@
-import html2canvas from "html2canvas";
+import { toCanvas } from "html-to-image";
 import { jsPDF } from "jspdf";
-
-/**
- * Walk every element and inline computed rgb() colors so html2canvas
- * doesn't choke on oklch/lab values used by Tailwind v4.
- */
-function inlineColors(root: HTMLElement) {
-  const props = [
-    "color", "backgroundColor",
-    "borderTopColor", "borderBottomColor",
-    "borderLeftColor", "borderRightColor",
-  ] as const;
-
-  const all = [root, ...Array.from(root.querySelectorAll("*"))];
-  all.forEach((el) => {
-    if (!(el instanceof HTMLElement)) return;
-    const cs = window.getComputedStyle(el);
-    props.forEach((p) => {
-      const v = cs[p];
-      if (v && (v.includes("oklch") || v.includes("lab(") || v.includes("lch("))) {
-        el.style[p] = "transparent";
-      } else if (v && v.startsWith("rgb")) {
-        el.style[p] = v;
-      }
-    });
-  });
-}
 
 export async function generatePDF(element: HTMLElement, filename: string) {
   const PDF_W_MM = 210;
@@ -70,25 +44,17 @@ export async function generatePDF(element: HTMLElement, filename: string) {
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     await new Promise((r) => setTimeout(r, 400));
 
-    // Patch oklch → rgb so html2canvas renders all colours correctly
-    inlineColors(clone);
-
     const totalHeight = clone.scrollHeight || 1123;
 
-    const canvas = await html2canvas(clone, {
-      scale:       2,
-      useCORS:     true,
-      allowTaint:  true,
-      logging:     false,
+    const canvas = await toCanvas(clone, {
+      width: A4_PX_W,
+      height: totalHeight,
       backgroundColor: "#ffffff",
-      width:       A4_PX_W,
-      height:      totalHeight,
-      windowWidth: A4_PX_W,
-      windowHeight:totalHeight,
-      scrollX:     0,
-      scrollY:     0,
-      x:           0,
-      y:           0,
+      pixelRatio: 2,
+      style: {
+        transform: "none",
+        transformOrigin: "top left",
+      }
     });
 
     if (!canvas.width || !canvas.height) {

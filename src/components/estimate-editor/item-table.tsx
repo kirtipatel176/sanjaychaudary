@@ -42,13 +42,7 @@ export function ItemTableEditor() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/60 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
-          </div>
-          <h2 className="text-lg font-bold text-slate-800 tracking-tight">Line Items</h2>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4 pb-2">
         <Button 
           onClick={handleAddItem} 
           disabled={items.length >= 6}
@@ -193,7 +187,7 @@ export function ItemTableEditor() {
             <Input 
               id="discount"
               type="number" 
-              value={discount === 0 ? "" : discount} 
+              value={discount ? discount : ""} 
               onChange={(e) => updateFinancials(e.target.value ? Number(e.target.value) : 0, taxRate)}
               placeholder="0"
               className="text-right h-8"
@@ -207,7 +201,7 @@ export function ItemTableEditor() {
             <Input 
               id="taxRate"
               type="number" 
-              value={taxRate === 0 ? "" : taxRate} 
+              value={taxRate ? taxRate : ""} 
               onChange={(e) => updateFinancials(discount, e.target.value ? Number(e.target.value) : 0)}
               placeholder="0"
               className="text-right h-8"

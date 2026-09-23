@@ -12,19 +12,21 @@ export function BusinessDetailsEditor() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3 border-b border-slate-200/60 pb-4">
-        <div className="p-2 bg-indigo-100 rounded-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"/><path d="M12 3v6"/></svg>
-        </div>
-        <h2 className="text-lg font-bold text-slate-800 tracking-tight">Business Profile</h2>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <div className="space-y-1.5">
           <Label htmlFor="b-name">Business Name</Label>
           <Input 
             id="b-name" 
             value={info.name || ""} 
             onChange={(e) => updateBusinessInfo({ name: e.target.value })} 
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="b-slogan">Slogan (Optional)</Label>
+          <Input 
+            id="b-slogan" 
+            value={info.slogan || ""} 
+            onChange={(e) => updateBusinessInfo({ slogan: e.target.value })} 
           />
         </div>
         <div className="space-y-1.5">
@@ -94,6 +96,55 @@ export function BusinessDetailsEditor() {
             )}
           </div>
         </div>
+        <div className="space-y-1.5 md:col-span-2 mt-4">
+          <Label>QR Code Image (Optional)</Label>
+          <p className="text-xs text-slate-500 mb-2">Upload a QR code to display a stylish payment card on the estimate.</p>
+          <div className="flex flex-col gap-2">
+            {info.qrCodeImage ? (
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 border rounded bg-slate-50 flex items-center justify-center p-1">
+                  <img src={info.qrCodeImage} alt="QR Code" className="max-w-full max-h-full object-contain" />
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => updateBusinessInfo({ qrCodeImage: null })}
+                >
+                  Clear QR Code
+                </Button>
+              </div>
+            ) : (
+              <Input 
+                type="file" 
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      updateBusinessInfo({ qrCodeImage: reader.result as string });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {info.qrCodeImage && (
+          <div className="space-y-1.5 md:col-span-2 mt-2 bg-purple-50 p-4 rounded-lg border border-purple-100">
+            <Label htmlFor="b-upi">UPI ID for Payment Card</Label>
+            <Input 
+              id="b-upi" 
+              placeholder="e.g. coolfix@okaxis"
+              value={info.upiId || ""} 
+              onChange={(e) => updateBusinessInfo({ upiId: e.target.value })} 
+              className="bg-white"
+            />
+            <p className="text-xs text-purple-600 mt-1">This will be printed next to the QR code on the payment card.</p>
+          </div>
+        )}
       </div>
     </div>
   );
