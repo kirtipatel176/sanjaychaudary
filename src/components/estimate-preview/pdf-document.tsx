@@ -38,15 +38,11 @@ export const PDFDocument = forwardRef<HTMLDivElement, PDFDocumentProps>(({ estim
       )}
 
       {/* ── HEADER (Absolute Background) ── */}
-      <div 
-        className="absolute top-0 left-0 right-0 h-[380px] pointer-events-none overflow-hidden"
-        style={{
-          maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)'
-        }}
-      >
+      <div className="absolute top-0 left-0 right-0 h-[380px] pointer-events-none overflow-hidden">
         {/* Header Background Image with AC on the right */}
         <img src="/header-bg.jpg" className="absolute inset-0 w-full h-full object-cover object-right" alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+        {/* White gradient overlay for seamless fade (Replaces mask-image for iOS PDF compatibility) */}
+        <div className="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-white to-transparent/0"></div>
       </div>
 
       {/* ── HEADER CONTENT ── */}
