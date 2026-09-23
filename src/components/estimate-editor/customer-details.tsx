@@ -48,12 +48,22 @@ export function CustomerDetailsEditor() {
             />
           </div>
           <div className="space-y-1.5 md:col-span-2">
-            <Label htmlFor="c-address">Address</Label>
+            <Label htmlFor="c-address">Address Line 1</Label>
             <Textarea 
               id="c-address" 
               value={info.address || ""} 
               onChange={(e) => updateCustomerInfo({ address: e.target.value })} 
               rows={2}
+            />
+          </div>
+          <div className="space-y-1.5 md:col-span-2">
+            <Label htmlFor="c-address2">Address Line 2</Label>
+            <Textarea 
+              id="c-address2" 
+              value={info.address2 || ""} 
+              onChange={(e) => updateCustomerInfo({ address2: e.target.value })} 
+              rows={2}
+              placeholder="Optional"
             />
           </div>
           <div className="space-y-1.5">
@@ -103,11 +113,21 @@ export function CustomerDetailsEditor() {
             />
           </div>
           <div className="space-y-1.5 md:col-span-2">
-            <Label htmlFor="s-address">Service Address</Label>
+            <Label htmlFor="s-address">Service Address Line 1</Label>
             <Textarea 
               id="s-address" 
               value={serviceLoc.address || ""} 
               onChange={(e) => updateServiceLocation({ address: e.target.value })} 
+              rows={2}
+              placeholder="Optional"
+            />
+          </div>
+          <div className="space-y-1.5 md:col-span-2">
+            <Label htmlFor="s-address2">Service Address Line 2</Label>
+            <Textarea 
+              id="s-address2" 
+              value={serviceLoc.address2 || ""} 
+              onChange={(e) => updateServiceLocation({ address2: e.target.value })} 
               rows={2}
               placeholder="Optional"
             />

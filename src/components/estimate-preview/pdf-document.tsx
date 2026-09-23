@@ -1,282 +1,205 @@
 import React, { forwardRef } from "react";
 import { Estimate } from "@/types/estimate";
-import { formatCurrency } from "@/lib/calculations";
-import { Phone, MapPin, CheckCircle, ShieldCheck, ThumbsUp, Users, Airplay, Droplets, ThermometerSun, WashingMachine, FileText, User } from "lucide-react";
 
 interface PDFDocumentProps {
   estimate: Estimate;
 }
 
 export const PDFDocument = forwardRef<HTMLDivElement, PDFDocumentProps>(({ estimate }, ref) => {
-  const { businessInfo, customerInfo, serviceLocation, estimateDetails, items, subtotal, discount, taxRate, total, notes, terms } = estimate;
+  const { businessInfo, customerInfo, serviceLocation, estimateDetails, items: allItems, subtotal, discount, taxRate, total, notes, terms } = estimate;
+  
+  // Strictly enforce 6 items max for the template consistency
+  const items = allItems.slice(0, 6);
 
   return (
     <div 
       ref={ref} 
-      className="bg-white text-[#1e293b] font-sans mx-auto relative overflow-hidden shrink-0 flex flex-col"
+      className="bg-white text-slate-800 font-sans mx-auto flex flex-col shrink-0"
       style={{
         width: "210mm",
         minHeight: "297mm",
-        boxShadow: "0 0 40px rgba(0,0,0,0.1)",
+        boxSizing: "border-box",
+        padding: "48px",
       }}
     >
-      {/* ── Full-Page Background Watermark Logo (centered on A4) ── */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
-          zIndex: 50,
-          gap: "40px",
-        }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo.jpg"
-          alt=""
-          aria-hidden="true"
-          style={{
-            width: "500px",
-            height: "500px",
-            objectFit: "contain",
-            opacity: 0.08,
-            mixBlendMode: "multiply",
-            userSelect: "none",
-          }}
-        />
-      </div>
-      {/* HEADER SECTION */}
-      <div className="flex justify-between items-stretch pt-6 pl-8 relative h-[140px]" style={{ zIndex: 1 }}>
-        {/* Left Logo Area */}
-        <div style={{ display: "flex", alignItems: "center", gap: "14px", zIndex: 10, width: "58%" }}>
-          {/* Actual HydroCool Logo Image */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.jpg"
-            alt="HydroCool Services Logo"
-            style={{
-              width: "82px",
-              height: "82px",
-              objectFit: "contain",
-              flexShrink: 0,
-            }}
-          />
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <h1 style={{ fontSize: "2.6rem", fontWeight: 900, lineHeight: 1, margin: 0, letterSpacing: "-0.03em", fontFamily: "Arial Black, Arial, sans-serif" }}>
-              <span style={{ color: "#0ea5e9" }}>Hydro</span><span style={{ color: "#f97316" }}>Cool</span>
-            </h1>
-            <p style={{ fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.38em", color: "#1e3a8a", lineHeight: 1, margin: "4px 0 3px", fontFamily: "Arial, sans-serif" }}>S E R V I C E S</p>
+      {/* ── HEADER ── */}
+      <div className="flex justify-between items-start mb-10">
+        <div>
+          <h1 className="text-4xl font-black text-blue-700 tracking-tight mb-6">ESTIMATE</h1>
+          <div className="grid grid-cols-[100px_1fr] gap-y-2 text-xs">
+            <span className="font-semibold text-slate-500">Estimate No.</span>
+            <span className="font-bold text-slate-800">{estimateDetails.estimateNumber}</span>
+            <span className="font-semibold text-slate-500">Estimate Date</span>
+            <span suppressHydrationWarning className="font-bold text-slate-800">{estimateDetails.estimateDate}</span>
+            {estimateDetails.validUntil && (
+              <>
+                <span className="font-semibold text-slate-500">Valid Until</span>
+                <span suppressHydrationWarning className="font-bold text-slate-800">{estimateDetails.validUntil}</span>
+              </>
+            )}
           </div>
         </div>
-
         
-        {/* Right Info Area - Curved Blue Background */}
-        <div className="absolute right-0 top-0 h-[170px] w-[350px] bg-[#1e3a8a] text-white rounded-bl-[80px] p-6 z-0 flex flex-col justify-center shadow-lg">
-          <div className="pl-6 pt-2">
-            <h3 className="font-bold text-lg mb-3">Pro. {businessInfo.proprietor}</h3>
-            <div className="flex items-start gap-3 mb-3 text-sm">
-              <div className="bg-white rounded-full p-1 shrink-0"><Phone className="w-3.5 h-3.5 text-[#1e3a8a]" /></div>
-              <span className="font-medium pt-0.5">{businessInfo.phone}</span>
-            </div>
-            <div className="flex items-start gap-3 text-xs leading-tight">
-              <div className="bg-white rounded-full p-1 shrink-0"><MapPin className="w-3.5 h-3.5 text-[#1e3a8a]" /></div>
-              <span className="w-48 whitespace-pre-line">{businessInfo.address}</span>
-            </div>
+        {/* BRANDING */}
+        <div className="flex items-center gap-3 shrink-0 text-right">
+          <div className="flex flex-col justify-center">
+            <span className="text-2xl font-black text-slate-800 tracking-tight leading-none mb-1">{businessInfo.name}</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{businessInfo.services || "Services"}</span>
+          </div>
+          <div className="w-16 h-16 shrink-0 bg-slate-50 rounded-lg flex items-center justify-center p-1 border border-slate-100 shadow-sm">
+            <img src="/logo.jpg" alt="Logo" className="max-w-full max-h-full object-contain mix-blend-multiply" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           </div>
         </div>
       </div>
 
-      {/* Services Ribbon & Icons */}
-      <div className="flex justify-between items-center px-8 mt-6 h-12 relative z-10">
-        <div className="flex gap-10 font-bold text-[10px] uppercase tracking-wider text-[#0f172a] ml-4">
-          <div className="flex flex-col items-center gap-1.5"><div className="border rounded p-1 shadow-sm"><Airplay className="w-6 h-6 text-[#475569]" /></div><span>AC</span></div>
-          <div className="flex flex-col items-center gap-1.5"><div className="border rounded p-1 shadow-sm"><Droplets className="w-6 h-6 text-[#475569]" /></div><span>RO</span></div>
-          <div className="flex flex-col items-center gap-1.5"><div className="border rounded p-1 shadow-sm"><ThermometerSun className="w-6 h-6 text-[#475569]" /></div><span>Geyser</span></div>
-          <div className="flex flex-col items-center gap-1.5 text-center w-20 leading-tight"><div className="border rounded p-1 shadow-sm"><WashingMachine className="w-6 h-6 text-[#475569]" /></div><span>Washing Machine</span></div>
+      {/* ── ADDRESS BLOCKS ── */}
+      <div className="grid grid-cols-2 gap-6 mb-10">
+        {/* From (Business) */}
+        <div className="bg-slate-50 p-5 rounded-lg border border-slate-100">
+          <div className="grid grid-cols-[80px_1fr] gap-2 text-xs">
+            <span className="font-semibold text-slate-500">Estimate By</span>
+            <span className="font-bold text-slate-800">{businessInfo.name}</span>
+            
+            <span className="font-semibold text-slate-500">Address</span>
+            <span className="text-slate-600 leading-relaxed whitespace-pre-wrap">{businessInfo.address}</span>
+            
+            {businessInfo.phone && (
+              <>
+                <span className="font-semibold text-slate-500">Phone</span>
+                <span className="text-slate-600">{businessInfo.phone}</span>
+              </>
+            )}
+          </div>
         </div>
-        <div className="bg-[#0ea5e9] text-white py-2.5 px-8 text-sm absolute right-0 w-[350px] shadow-md rounded-l-3xl">
-          <div className="pl-6 font-serif italic font-medium" style={{ fontFamily: '"Brush Script MT", "Comic Sans MS", cursive', fontSize: '1.1rem' }}>
-            All Your Home Service Solutions<br/><span className="pl-4">Under One Roof</span>
+
+        {/* To (Customer) */}
+        <div className="bg-slate-50 p-5 rounded-lg border border-slate-100">
+          <div className="grid grid-cols-[80px_1fr] gap-2 text-xs">
+            <span className="font-semibold text-slate-500">Estimate To</span>
+            <span className="font-bold text-slate-800">{customerInfo.name || "-"}</span>
+            
+            <span className="font-semibold text-slate-500">Address</span>
+            <span className="text-slate-600 leading-relaxed whitespace-pre-wrap">
+              {[customerInfo.address, customerInfo.address2].filter(Boolean).join('\n') || "-"}
+            </span>
+            
+            {customerInfo.phone && (
+              <>
+                <span className="font-semibold text-slate-500">Phone</span>
+                <span className="text-slate-600">{customerInfo.phone}</span>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="px-8 flex-1 mt-8 relative" style={{ zIndex: 1 }}>
-        {/* Title Area */}
-        <div className="flex justify-between items-end mb-6">
-          <div>
-            <h2 className="text-[3.25rem] font-black text-[#1e3a8a] tracking-tight leading-none mb-1">ESTIMATE</h2>
-            <p className="text-[#334155] tracking-[0.2em] text-sm font-semibold uppercase">Quotation For Services</p>
-          </div>
-          <div className="w-64 border-2 border-[#e2e8f0] rounded bg-[#f8fafc]">
-            <div className="flex border-b-2 border-[#e2e8f0] p-2">
-              <span className="font-bold text-[#1e3a8a] w-28 text-sm">Estimate No. :</span>
-              <span className="text-[#334155] text-sm font-medium">{estimateDetails.estimateNumber}</span>
-            </div>
-            <div className="flex p-2">
-              <span className="font-bold text-[#1e3a8a] w-28 text-sm">Estimate Date :</span>
-              <span suppressHydrationWarning className="text-[#334155] text-sm font-medium">{estimateDetails.estimateDate}</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Details Blocks */}
-        <div className="flex gap-4 mb-6">
-          {/* Customer Details */}
-          <div className="flex-1 border-2 border-[#1e3a8a] rounded-lg overflow-hidden">
-            <div className="bg-[#1e3a8a] text-white px-3 py-1.5 font-bold flex items-center gap-2 text-sm">
-              <User className="w-4 h-4" /> Customer Details
-            </div>
-            <div className="p-3 text-sm space-y-3 text-[#334155] font-medium bg-[#f8fafc]">
-              <div className="flex items-end border-b border-[#cbd5e1] pb-1"><span className="w-24">Name</span><span className="px-2">:</span><span className="flex-1">{customerInfo.name}</span></div>
-              <div className="flex items-end border-b border-[#cbd5e1] pb-1"><span className="w-24">Address</span><span className="px-2">:</span><span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{customerInfo.address}</span></div>
-              <div className="flex items-end border-b border-[#cbd5e1] pb-1"><span className="w-24">Contact No.</span><span className="px-2">:</span><span className="flex-1">{customerInfo.phone}</span></div>
-            </div>
-          </div>
-
-          {/* Service Location */}
-          <div className="flex-1 border-2 border-[#1e3a8a] rounded-lg overflow-hidden">
-            <div className="bg-[#1e3a8a] text-white px-3 py-1.5 font-bold flex items-center gap-2 text-sm">
-              <MapPin className="w-4 h-4" /> Service Location (If Different)
-            </div>
-            <div className="p-3 text-sm space-y-3 text-[#334155] font-medium bg-[#f8fafc]">
-              <div className="flex items-end border-b border-[#cbd5e1] pb-1"><span className="w-24">Name</span><span className="px-2">:</span><span className="flex-1">{serviceLocation?.name || ''}</span></div>
-              <div className="flex items-end border-b border-[#cbd5e1] pb-1"><span className="w-24">Address</span><span className="px-2">:</span><span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{serviceLocation?.address || ''}</span></div>
-              <div className="flex items-end border-b border-[#cbd5e1] pb-1"><span className="w-24">Contact No.</span><span className="px-2">:</span><span className="flex-1">{serviceLocation?.phone || ''}</span></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Item Table */}
-        <div className="border border-[#cbd5e1] overflow-hidden mb-6 relative">
-          <table className="w-full text-sm text-[#0f172a] relative z-10">
-            <thead className="bg-[#bae6fd] text-[#1e3a8a] border-b border-[#cbd5e1]">
-              <tr>
-                <th className="py-2 px-2 text-center font-bold border-r border-[#cbd5e1] w-12">Sr. No.</th>
-                <th className="py-2 px-4 text-left font-bold border-r border-[#cbd5e1]">Item Name / Description</th>
-                <th className="py-2 px-2 text-center font-bold border-r border-[#cbd5e1] w-20">Qty</th>
-                <th className="py-2 px-2 text-center font-bold border-r border-[#cbd5e1] w-28">Rate (₹)</th>
-                <th className="py-2 px-2 text-center font-bold w-32">Amount (₹)</th>
+      {/* ── ITEMS TABLE ── */}
+      <div className="mb-8 rounded-lg overflow-hidden flex-1 border border-slate-200">
+        <table className="w-full text-sm">
+          <thead className="bg-blue-700 text-white">
+            <tr>
+              <th className="py-3 px-4 text-left font-semibold w-12 text-xs">#</th>
+              <th className="py-3 px-4 text-left font-semibold text-xs">Item Description</th>
+              <th className="py-3 px-4 text-center font-semibold w-24 text-xs">Qty</th>
+              <th className="py-3 px-4 text-right font-semibold w-32 text-xs">Rate (₹)</th>
+              <th className="py-3 px-4 text-right font-semibold w-32 text-xs">Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200 border-b border-slate-200">
+            {items.map((item, index) => (
+              <tr key={item.id} className={`${index % 2 === 0 ? "bg-white" : "bg-slate-50/80"} border-b border-slate-100`}>
+                <td className="py-3 px-4 text-slate-500 font-medium text-xs">{String(index + 1).padStart(2, '0')}</td>
+                <td className="py-3 px-4 font-medium text-slate-800">{item.description}</td>
+                <td className="py-3 px-4 text-center text-slate-600 font-medium">{item.quantity ?? ""}</td>
+                <td className="py-3 px-4 text-right text-slate-600 font-medium">{item.rate}</td>
+                <td className="py-3 px-4 text-right font-bold text-slate-800">{item.amount > 0 ? item.amount : ""}</td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-[#cbd5e1]">
-              {items.map((item, index) => (
-                <tr key={item.id} className="min-h-[32px]">
-                  <td className="py-1.5 px-2 text-center font-medium border-r border-[#cbd5e1]">{index + 1}</td>
-                  <td className="py-1.5 px-4 border-r border-[#cbd5e1] font-medium">{item.description}</td>
-                  <td className="py-1.5 px-2 text-center border-r border-[#cbd5e1] font-medium">{item.quantity ?? ""}</td>
-                  <td className="py-1.5 px-2 text-right border-r border-[#cbd5e1] font-medium">{item.rate}</td>
-                  <td className="py-1.5 px-2 text-right font-medium">{item.amount > 0 ? item.amount : ""}</td>
-                </tr>
-              ))}
-              {/* Fill empty rows to make table look complete (exactly 6 rows total like the template) */}
-              {Array.from({ length: Math.max(0, 6 - items.length) }).map((_, i) => (
-                <tr key={`empty-${i}`} className="h-[32px]">
-                  <td className="border-r border-[#cbd5e1]"></td>
-                  <td className="border-r border-[#cbd5e1]"></td>
-                  <td className="border-r border-[#cbd5e1]"></td>
-                  <td className="border-r border-[#cbd5e1]"></td>
-                  <td></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Bottom Section: Notes & Totals */}
-        <div className="flex gap-4">
-          <div className="flex-1 space-y-4 pr-4">
-            {/* Notes */}
-            {notes.length > 0 && (
-              <div>
-                <h4 className="text-[13px] font-bold text-[#1e3a8a] flex items-center gap-1.5 mb-1">
-                  <FileText className="w-4 h-4 fill-[#1e3a8a] text-white" /> Notes:
-                </h4>
-                <div className="text-xs text-[#0f172a] pl-5 leading-snug font-medium">
-                  {notes.map((note, i) => <div key={i}>{note}</div>)}
-                </div>
-              </div>
-            )}
-            {/* Terms */}
-            {terms.length > 0 && (
-              <div>
-                <h4 className="text-[13px] font-bold text-[#1e3a8a] flex items-center gap-1.5 mb-1 mt-2">
-                  <FileText className="w-4 h-4 fill-[#1e3a8a] text-white" /> Terms & Conditions:
-                </h4>
-                <div className="text-xs text-[#0f172a] pl-5 leading-snug font-medium">
-                  {terms.map((term, i) => <div key={i}>{term}</div>)}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="w-[280px] border border-[#cbd5e1] h-fit bg-white -mt-[1px]">
-            <div className="flex border-b border-[#cbd5e1] p-2">
-              <span className="font-bold text-[#0f172a] flex-1 text-sm">Subtotal</span>
-              <span className="text-[#0f172a] font-bold text-sm">₹ {subtotal}</span>
-            </div>
-            <div className="flex border-b border-[#cbd5e1] p-2">
-              <span className="font-bold text-[#0f172a] flex-1 text-sm">GST (If Applicable)</span>
-              <span className="text-[#0f172a] font-bold text-sm">₹ {((Math.max(0, subtotal - discount) * taxRate) / 100).toFixed(2)}</span>
-            </div>
-            <div className="flex p-2 bg-[#1e3a8a] text-white border border-[#1e3a8a]">
-              <span className="font-bold flex-1 text-sm">Grand Total</span>
-              <span className="font-bold text-sm">₹ {total}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Signatures & Thank you */}
-        <div className="flex justify-between items-end mt-16 mb-6 px-4">
-          <div className="text-center w-48">
-            <div className="border-t border-dashed border-[#64748b] pt-2">
-              <p className="text-xs font-bold text-[#1e3a8a]">Customer's Signature</p>
-            </div>
-          </div>
-          <div className="text-center text-[#0ea5e9]">
-            <h2 className="text-4xl italic" style={{ fontFamily: '"Brush Script MT", "Comic Sans MS", cursive' }}>Thank You!</h2>
-            <p className="text-[10px] tracking-[0.25em] font-semibold text-[#1e3a8a] uppercase mt-1">For Your Business</p>
-          </div>
-          <div className="text-center w-48">
-            <div className="border-t border-dashed border-[#64748b] pt-2">
-              <p className="text-xs font-bold text-[#1e3a8a]">For, HydroCool Services</p>
-              <p className="text-[10px] text-[#475569] font-medium mt-0.5">Authorized Signatory</p>
-            </div>
-          </div>
-        </div>
+            ))}
+            {/* Padding rows to maintain exact height */}
+            {Array.from({ length: Math.max(0, 6 - items.length) }).map((_, i) => (
+              <tr key={`empty-${i}`} className={`${(items.length + i) % 2 === 0 ? "bg-white" : "bg-slate-50/80"} border-b border-slate-100`}>
+                <td className="py-3 px-4 h-[44px]"></td>
+                <td className="py-3 px-4"></td>
+                <td className="py-3 px-4"></td>
+                <td className="py-3 px-4"></td>
+                <td className="py-3 px-4"></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* FOOTER */}
-      <div className="bg-[#1e3a8a] text-white p-3 flex justify-between items-center mt-auto shrink-0 relative overflow-hidden">
-        {/* Subtle background glow effect on right */}
-        <div className="absolute right-0 top-0 w-64 h-full bg-[#0ea5e9] opacity-10 pointer-events-none" />
-        
-        <div className="flex gap-4 text-[9px] font-bold tracking-wider leading-tight">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-7 h-7" /> RELIABLE<br/>SERVICE
-          </div>
-          <div className="flex items-center gap-2 border-l border-[#3b82f64d] pl-4">
-            <Users className="w-7 h-7" /> EXPERT<br/>TECHNICIANS
-          </div>
-          <div className="flex items-center gap-2 border-l border-[#3b82f64d] pl-4">
-            <ThumbsUp className="w-7 h-7" /> QUALITY<br/>WORK
-          </div>
-          <div className="flex items-center gap-2 border-l border-[#3b82f64d] pl-4">
-            <CheckCircle className="w-7 h-7" /> CUSTOMER<br/>SATISFACTION
+      {/* ── TOTALS & FOOTER ── */}
+      <div className="flex gap-10 items-start">
+        {/* Notes & Terms */}
+        <div className="flex-1 space-y-6 pt-2">
+          {terms.length > 0 && (
+            <div>
+              <h4 className="text-sm font-bold text-blue-700 mb-2">Terms and Conditions</h4>
+              <ul className="text-xs text-slate-500 space-y-1 leading-relaxed">
+                {terms.map((term, i) => <li key={i}>{term}</li>)}
+              </ul>
+            </div>
+          )}
+          {notes.length > 0 && (
+            <div>
+              <h4 className="text-sm font-bold text-blue-700 mb-2">Additional Notes</h4>
+              <ul className="text-xs text-slate-500 space-y-1 leading-relaxed">
+                {notes.map((note, i) => <li key={i}>{note}</li>)}
+              </ul>
+            </div>
+          )}
+          
+          <div className="pt-8">
+            <p className="text-[10px] font-bold text-slate-800">
+              For any enquiries, email us or call us on <span className="text-blue-700">{businessInfo.phone}</span>
+            </p>
           </div>
         </div>
         
-        <div className="text-right font-serif italic text-2xl text-[#0ea5e9] leading-tight pr-4 relative z-10" style={{ fontFamily: '"Brush Script MT", "Comic Sans MS", cursive' }}>
-          Cooler Homes<br/>Happier Lives
-          <div className="w-full h-1 bg-[#f97316] rounded-full mt-1 -rotate-2 transform origin-left" />
+        {/* Totals */}
+        <div className="w-[300px] shrink-0">
+          <div className="space-y-3 mb-10">
+            <div className="flex justify-between text-sm font-medium text-slate-600 px-2">
+              <span>Sub Total</span>
+              <span className="font-bold text-slate-800">₹ {Number(subtotal).toFixed(2)}</span>
+            </div>
+            {discount > 0 && (
+              <div className="flex justify-between text-sm font-medium text-emerald-600 px-2 mt-1">
+                <span>Discount</span>
+                <span>- ₹ {Number(discount).toFixed(2)}</span>
+              </div>
+            )}
+            {taxRate > 0 && (
+              <div className="flex justify-between text-sm font-medium text-slate-600 px-2 mt-1 pb-3">
+                <span>Tax ({taxRate}%)</span>
+                <span>+ ₹ {((Math.max(0, subtotal - discount) * taxRate) / 100).toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-xl font-black text-slate-800 pt-3 px-2 border-t-2 border-slate-200">
+              <span>Total</span>
+              <span>₹ {Number(total).toFixed(2)}</span>
+            </div>
+          </div>
+
+          {/* Signature Box */}
+          <div className="flex flex-col items-center justify-end mt-12">
+            <div className="w-48 h-20 flex items-end justify-center mb-2">
+              {businessInfo.signatureImage ? (
+                <img 
+                  src={businessInfo.signatureImage} 
+                  alt="Signature" 
+                  className="max-w-full max-h-full object-contain mix-blend-multiply" 
+                  style={{ filter: 'grayscale(100%) brightness(200%) contrast(500%)' }}
+                />
+              ) : (
+                <div className="w-full h-full border-b border-dashed border-slate-300"></div>
+              )}
+            </div>
+            <p className="text-[10px] font-bold text-slate-800 uppercase tracking-wider text-center">Authorized Signature</p>
+            <p className="text-[9px] text-slate-500 mt-0.5 text-center">{businessInfo.name}</p>
+          </div>
         </div>
       </div>
     </div>

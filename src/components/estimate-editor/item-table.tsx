@@ -12,6 +12,10 @@ export function ItemTableEditor() {
   const { items, discount, taxRate, subtotal, total } = estimate;
 
   const handleAddItem = () => {
+    if (items.length >= 6) {
+      alert("Maximum of 6 items allowed for this bill design.");
+      return;
+    }
     addItem({
       id: crypto.randomUUID(),
       description: "",
@@ -45,8 +49,13 @@ export function ItemTableEditor() {
           </div>
           <h2 className="text-lg font-bold text-slate-800 tracking-tight">Line Items</h2>
         </div>
-        <Button onClick={handleAddItem} size="sm" className="h-9 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 rounded-full px-5 transition-all hover:scale-105">
-          <Plus className="w-4 h-4 mr-1" /> Add Item
+        <Button 
+          onClick={handleAddItem} 
+          disabled={items.length >= 6}
+          size="sm" 
+          className="h-9 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 rounded-full px-5 transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+        >
+          <Plus className="w-4 h-4 mr-1" /> {items.length >= 6 ? "Max 6 Items" : "Add Item"}
         </Button>
       </div>
 
@@ -104,7 +113,7 @@ export function ItemTableEditor() {
                     variant="ghost" 
                     size="icon" 
                     onClick={() => removeItem(item.id)}
-                    className="opacity-0 group-hover:opacity-100 h-8 w-8 text-muted-foreground hover:text-destructive"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

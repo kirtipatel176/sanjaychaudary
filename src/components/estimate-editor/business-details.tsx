@@ -4,6 +4,7 @@ import { useEstimateStore } from "@/lib/store";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export function BusinessDetailsEditor() {
   const { estimate, updateBusinessInfo } = useEstimateStore();
@@ -58,6 +59,40 @@ export function BusinessDetailsEditor() {
             onChange={(e) => updateBusinessInfo({ address: e.target.value })} 
             rows={3}
           />
+        </div>
+        <div className="space-y-1.5 md:col-span-2">
+          <Label>Authorized Signature</Label>
+          <div className="flex flex-col gap-2">
+            {info.signatureImage ? (
+              <div className="flex items-center gap-4">
+                <div className="w-32 h-16 border rounded bg-slate-50 flex items-center justify-center p-1">
+                  <img src={info.signatureImage} alt="Signature" className="max-w-full max-h-full object-contain" />
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => updateBusinessInfo({ signatureImage: null })}
+                >
+                  Clear Signature
+                </Button>
+              </div>
+            ) : (
+              <Input 
+                type="file" 
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      updateBusinessInfo({ signatureImage: reader.result as string });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

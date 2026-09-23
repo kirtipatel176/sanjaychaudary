@@ -15,6 +15,7 @@ export const BusinessInfoSchema = z.object({
   proprietor: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
+  signatureImage: z.string().nullable().optional(),
 });
 
 export const CustomerInfoSchema = z.object({
@@ -22,6 +23,7 @@ export const CustomerInfoSchema = z.object({
   phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
   address: z.string().optional(),
+  address2: z.string().optional(),
   city: z.string().optional(),
   state: z.string().optional(),
   country: z.string().optional(),
@@ -31,6 +33,7 @@ export const ServiceLocationSchema = z.object({
   name: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
+  address2: z.string().optional(),
 });
 
 export const EstimateDetailsSchema = z.object({

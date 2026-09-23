@@ -11,12 +11,14 @@ const initialEstimate: Estimate = {
     proprietor: "Sanjay Patel",
     phone: "+91 78781 29063",
     address: "Ground Floor, Shop No. 3, Parishram Complex,\nGandhinagar–Dabhoda Highway,\nNear GIFT City, Gandhinagar",
+    signatureImage: null,
   },
   customerInfo: {
     name: "",
     phone: "",
     email: "",
     address: "",
+    address2: "",
     city: "",
     state: "",
     country: "",
@@ -25,6 +27,7 @@ const initialEstimate: Estimate = {
     name: "",
     phone: "",
     address: "",
+    address2: "",
   },
   estimateDetails: {
     estimateNumber: "EST-001",
@@ -32,15 +35,11 @@ const initialEstimate: Estimate = {
     validUntil: "",
   },
   items: [],
-  notes: [
-    "1. 1/2\" & 1/4\" Copper Pipes (RR).",
-    "2. 1/2\" & 1/4\" Sleeves (A-Flex).",
-    "3. 2.5 sq. mm, 4-core cables (Darshan).",
-    "4. White pipe tapping.",
-  ],
+  notes: [],
   terms: [
-    "1. Payment is required upon completion of work for all 5 floors.",
-    "2. If the price of materials increases, the revised (higher) price will apply to this estimate.",
+    "1. Payment is due upon completion of the service.",
+    "2. Estimates are valid for 15 days from the date of issue.",
+    "3. Prices are subject to change based on site conditions or additional material required."
   ],
   discount: 0,
   taxRate: 0,

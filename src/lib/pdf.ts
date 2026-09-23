@@ -95,29 +95,12 @@ export async function generatePDF(element: HTMLElement, filename: string) {
       throw new Error(`Canvas is empty (${canvas.width}×${canvas.height}). Try again.`);
     }
 
-    // ── 3. Build a multi-page PDF ──
-    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const pxPerMm        = canvas.width / PDF_W_MM;          // px per mm in the canvas
-    const pageHeightPx   = PDF_H_MM * pxPerMm;               // canvas rows per A4 page
-    const pageCount      = Math.ceil(canvas.height / pageHeightPx);
-
-    for (let page = 0; page < pageCount; page++) {
-      if (page > 0) pdf.addPage();
-
-      const srcY = page * pageHeightPx;
-      const srcH = Math.min(pageHeightPx, canvas.height - srcY);
-
-      // Slice this page from the full canvas
-      const pageCanvas    = document.createElement("canvas");
-      pageCanvas.width    = canvas.width;
-      pageCanvas.height   = pageHeightPx;           // always full page height
-      const ctx           = pageCanvas.getContext("2d")!;
-      ctx.fillStyle       = "#ffffff";
-      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-      ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
-
-      pdf.addImage(pageCanvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, PDF_W_MM, PDF_H_MM);
-    }
+    // ── 3. Build a strict 1-page PDF without distortion ──
+    const pdfHeightMm = (canvas.height * PDF_W_MM) / canvas.width;
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: [PDF_W_MM, Math.max(PDF_H_MM, pdfHeightMm)] });
+    
+    // Maintain perfect aspect ratio by using the calculated height
+    pdf.addImage(canvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, PDF_W_MM, pdfHeightMm);
 
     // ── 4. Save / open PDF ──
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
